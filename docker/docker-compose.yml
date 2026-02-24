@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  tls-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "8443:8443"
+
+  tls-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
