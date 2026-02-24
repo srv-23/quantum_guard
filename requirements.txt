@@ -1,4 +1,10 @@
 pyshark
 pandas
+numpy
 scikit-learn
 joblib
+matplotlib
+seaborn
+flask
+requests
+psutil
