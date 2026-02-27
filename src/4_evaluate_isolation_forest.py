@@ -10,7 +10,7 @@ from sklearn.metrics import (
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEST_DATA_PATH = os.path.join(BASE_DIR, "dataset", "final_test.csv")
+TEST_DATA_PATH = os.path.join(BASE_DIR, "dataset", "test_mixed.csv")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 OUTPUTS_DIR = os.path.join(BASE_DIR, "outputs")
 
@@ -24,10 +24,7 @@ def load_evaluation_components():
     if not os.path.exists(MODEL_PATH) or not os.path.exists(SCALER_PATH):
         raise FileNotFoundError("Model or Scaler not found. Run IF training first.")
         
-    if not os.path.exists(TEST_DATA_PATH):
-        raise FileNotFoundError(f"Test data not found at {TEST_DATA_PATH}")
-
-    print("Loading test data...")
+    print(f"Loading test data from {TEST_DATA_PATH}...")
     df_test = pd.read_csv(TEST_DATA_PATH)
     
     print("Loading Isolation Forest model and scaler...")

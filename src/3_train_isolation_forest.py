@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATASET_PATH = os.path.join(BASE_DIR, "dataset", "final_train.csv")
+DATASET_PATH = os.path.join(BASE_DIR, "dataset", "train_benign.csv")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 MODEL_PATH = os.path.join(MODELS_DIR, "isolation_forest.pkl")
 SCALER_PATH = os.path.join(MODELS_DIR, "if_scaler.pkl")
@@ -16,13 +16,23 @@ def load_benign_data(filepath):
     Load data and filter for benign samples only.
     """
     if not os.path.exists(filepath):
+        # Fallback to train_benign.csv if final_train.csv is missing
+        if "final_train.csv" in filepath:
+             filepath = filepath.replace("final_train.csv", "train_benign.csv")
+             
+    if not os.path.exists(filepath):
         raise FileNotFoundError(f"Training data not found at {filepath}")
         
     print(f"Loading data from {filepath}...")
     df = pd.read_csv(filepath)
     
     # Filter Benign (label == 0)
-    df_benign = df[df['label'] == 0].copy()
+    # If the file is train_benign.csv, check if 'label' exists, if not assume all 0
+    if 'label' in df.columns:
+        df_benign = df[df['label'] == 0].copy()
+    else:
+        print("No label column found, assuming all data is benign.")
+        df_benign = df.copy()
     
     if len(df_benign) == 0:
         raise ValueError("No benign samples found in training data.")

@@ -10,7 +10,7 @@ from sklearn.metrics import (
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEST_DATA_PATH = os.path.join(BASE_DIR, "dataset", "final_test.csv")
+TEST_DATA_PATH = os.path.join(BASE_DIR, "dataset", "test_mixed.csv")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 OUTPUTS_DIR = os.path.join(BASE_DIR, "outputs")
 

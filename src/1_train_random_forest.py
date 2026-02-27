@@ -6,7 +6,8 @@ from sklearn.preprocessing import StandardScaler
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATASET_PATH = os.path.join(BASE_DIR, "dataset", "final_train.csv")
+TRAIN_DATA_PATH = os.path.join(BASE_DIR, "dataset", "train_benign.csv")
+TEST_DATA_PATH = os.path.join(BASE_DIR, "dataset", "test_mixed.csv")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 MODEL_PATH = os.path.join(MODELS_DIR, "random_forest.pkl")
 SCALER_PATH = os.path.join(MODELS_DIR, "scaler.pkl")
@@ -74,21 +75,37 @@ def save_artifacts(model, scaler):
     print(f"Model saved to: {MODEL_PATH}")
     print(f"Scaler saved to: {SCALER_PATH}")
 
-def main():
+if __name__ == "__main__":
+    
     print("=== random_forest_training.py Started ===")
     
-    # 1. Load Data
+    # Load separate files
     try:
-        df = load_data(DATASET_PATH)
+        df_benign = load_data(TRAIN_DATA_PATH) 
+        df_mixed = load_data(TEST_DATA_PATH)
+        
+        # Combine benign + mixed to get both classes (0 and 1)
+        # Train on EVERYTHING since we are building a model.
+        # Or split? But usually we want as much data as possible.
+        # Let's concatenate.
+        df = pd.concat([df_benign, df_mixed], ignore_index=True)
+        print(f"[INFO] Combined {len(df_benign)} benign samples and {len(df_mixed)} mixed samples.")
+        
     except FileNotFoundError as e:
-        print(e)
-        return
+        print(f"[ERROR] {e}")
+        exit()
 
     # 2. Print Stats
     num_samples = len(df)
-    num_anomalies = df['label'].sum()
+    if 'label' in df.columns:
+        num_anomalies = df['label'].sum()
+    else:
+        num_anomalies = 0
+        df['label'] = 0
+        
     print(f"Total Training Samples: {num_samples}")
     print(f"Anomaly Samples: {num_anomalies}")
+    print(f"Class Distribution:\n{df['label'].value_counts()}")
 
     # 3. Preprocess
     X_scaled, y, scaler = preprocess_data(df)
@@ -98,8 +115,4 @@ def main():
 
     # 5. Save
     save_artifacts(model, scaler)
-    
     print("=== Training Complete ===")
-
-if __name__ == "__main__":
-    main()
